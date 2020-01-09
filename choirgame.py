@@ -7,7 +7,7 @@ import sys
 
 ERASE=True
  
-C,R=20,10 #number of columns, rows
+C,R=5,5 #number of columns, rows
 
 I=C*R #number of singers
 
@@ -37,7 +37,8 @@ def main():
     initialise()
     print_choir(False)
     run()
-    print_choir(ERASE)
+
+    print("Iterations: %d Loss: %.4f" % (len(history), loss()))
 
 #-- output
 
@@ -62,6 +63,16 @@ def strategy():
 def setup():
     return discrete_random()
 
+def loss():
+    TSS=0
+    ns_bar=0
+    for i in range(R):
+        for j in range(C):
+            pitch = choir[i][j]
+            ns_bar+=pitch
+            TSS += pitch ** 2
+    
+    return TSS/I + ((ns_bar/I)**2) * (1/I - 1)
 
 #-- game parameters
 
@@ -69,8 +80,7 @@ def setup():
 def discrete_monitor():
     global choir
     global history
-
-     #array of people around individual
+    
     # J indexes
     # 0 1 2 
     # 7 s 3 
@@ -103,12 +113,15 @@ def discrete_monitor():
             
             eval_dm_player(i,j,J)
            
-    
+
     history.append(choir)
+    if choir == pchoir: 
+        
+        return True
 
-    choir = pchoir
+    choir = [[s for s in row] for row in pchoir]
 
-
+    
     
     return False
 
@@ -150,6 +163,7 @@ def discrete_random():
     for i in range(R):
         for j in range(C):
             choir[i][j] = int(10 * random())%3 - 1
+    
 
 if __name__=="__main__":
     main()
