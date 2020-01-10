@@ -7,7 +7,7 @@ import sys
 
 ERASE=True
  
-C,R=5,5 #number of columns, rows
+C,R=4,4 #number of columns, rows
 
 I=C*R #number of singers
 
@@ -29,7 +29,7 @@ def initialise():
 def run(): 
     while True:
         if strategy(): break
-        time.sleep(0.4)
+        time.sleep(0.1)
         print_choir(ERASE)
     
 
@@ -38,7 +38,7 @@ def main():
     print_choir(False)
     run()
 
-    print("Iterations: %d Loss: %.4f" % (len(history), loss()))
+    print("Iterations: %d Loss: %.4f Initial: %.4f" % (len(history), loss(choir), loss(history[0])))
 
 #-- output
 
@@ -63,12 +63,12 @@ def strategy():
 def setup():
     return discrete_random()
 
-def loss():
+def loss(c):
     TSS=0
     ns_bar=0
     for i in range(R):
         for j in range(C):
-            pitch = choir[i][j]
+            pitch = c[i][j]
             ns_bar+=pitch
             TSS += pitch ** 2
     
@@ -83,12 +83,12 @@ def discrete_monitor():
     
     # J indexes
     # 0 1 2 
-    # 7 s 3 
+    # 7 8 3 
     # 6 5 4
    
     for i in range(R):
         for j in range(C):
-            J=[None for i in range(8)]
+            J=[None for i in range(9)]
             top = i-1 >= 0
             left = j-1 >= 0
             bottom = i+1 < R
@@ -110,6 +110,7 @@ def discrete_monitor():
                 if left:
                     J[6] = choir[i+1][j-1]
                     J[7] = choir[i][j-1]
+            J[8] = choir[i][j]
             
             eval_dm_player(i,j,J)
            
@@ -127,7 +128,7 @@ def discrete_monitor():
 
 def eval_dm_player(i,j,J):
     global pchoir
-    s = choir[i][j]
+    s = J[8]
     flat=0
     on=0
     sharp=0
